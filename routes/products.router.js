@@ -16,23 +16,21 @@ const defaultProduct = { title: '', description: '', code: '', price: '', status
 // * { id (automático: number/string), title, description, code, price, status (true por defecto), stock, category, thumbnail (No es obligatorio, Array de string con las rutas de las img) }
 router.post('/products', async (req, res) => {
 
-    const objectParam = req.body;
+    const objectParam = req.body || {};
 
     if (!isValidObject(objectParam, arrAttrRequired)) {
         return res.status(400).send({ message: 'Faltan atributos al objeto.', missingAttrs: findMissingAttributes(objectParam, arrAttrRequired) });
     }
 
-    const newId = await ProdManager.getLastId();
     const newObject = {
         ...defaultProduct,
-        ...objectParam,
-        id: newId
+        ...objectParam
     }
 
     const created = await ProdManager.addProduct(newObject);
 
     if (created) {
-        return res.status(200).json(newObject);
+        return res.status(200).send({ message: "Producto creado correctamente." });
     }
     return res.status(500).send({ message: "Ha ocurrido un error." });
 

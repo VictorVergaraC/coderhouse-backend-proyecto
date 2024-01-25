@@ -130,7 +130,7 @@ export class ProductManager {
         return arrData.length + 1
     }
 
-    async fileExist(strFile) {
+    async _fileExist(strFile) {
         try {
             await fs.promises.access(strFile, fs.constants.F_OK);
             return true;
@@ -139,7 +139,7 @@ export class ProductManager {
         }
     }
 
-    async createFile(strName, data) {
+    async _createFile(strName, data) {
         try {
             fs.writeFileSync(strName, data);
             return true;

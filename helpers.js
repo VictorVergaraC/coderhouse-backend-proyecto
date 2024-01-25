@@ -29,3 +29,18 @@ export const findMissingAttributes = (obj, requiredAttributes) => {
 
     return missingAttributes;
 };
+
+// * Esta función retorna un número en peso chileno.
+export const formatCLP = strNumber => {
+
+    const number = parseFloat(strNumber)
+
+    const format = new Intl.NumberFormat('es-CL', {
+        style: 'currency',
+        currency: 'CLP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+
+    return format.format(number);
+}
