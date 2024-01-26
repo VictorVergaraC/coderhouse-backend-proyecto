@@ -18,11 +18,15 @@ const shoppingCart = new CartManager();
 const ProdManager = new ProductManager();
 
 // ? Crear un nuevo carrito: { id (automático: Number/String), products (un Array) }
-router.post('/cart', async (req, res) => {
+router.post('/api/cart', async (req, res) => {
 
-    const objectParam = req.body;
+    const objectParam = req.body || {};
 
-    const { products: cartProducts } = objectParam;
+    if (!isValidObject(objectParam, ['products'])) {
+        return res.status(400).send({ message: 'Faltan atributos.', missingAttrs: ['products'], expectedCart: { products: [{}, {}] } });
+    }
+
+    const { products: cartProducts } = objectParam || { products: [] };
     if (cartProducts.length <= 0) {
         return res.status(400).send({ message: 'El carrito no puede estar vacío.' });
     }
@@ -57,7 +61,7 @@ router.post('/cart', async (req, res) => {
 });
 
 // ? Listar los productos según arreglo
-router.get('/cart/:cid', async (req, res) => {
+router.get('/api/cart/:cid', async (req, res) => {
     const cid = parseInt(req.params.cid);
     if (isNaN(cid)) {
         return res.status(400).send({ message: "El parámetro no es numérico." });
@@ -79,7 +83,7 @@ router.get('/cart/:cid', async (req, res) => {
 // ? Agrego el producto al carrito según sus respectivos IDs.
 // * product: { id, quantity }
 // ? Si el producto ya existe, modificar la cantidad.
-router.post('/cart/:cid/product/:pid', async (req, res) => {
+router.post('/api/cart/:cid/product/:pid', async (req, res) => {
     const cid = parseInt(req.params.cid);
     const pid = parseInt(req.params.pid);
     const paramProduct = req.body || {};

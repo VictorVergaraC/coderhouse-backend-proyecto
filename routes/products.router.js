@@ -14,7 +14,7 @@ const defaultProduct = { title: '', description: '', code: '', price: 0, status:
 
 // ? Agregar nuevo producto
 // * { id (automático: number/string), title, description, code, price, status (true por defecto), stock, category, thumbnail (No es obligatorio, Array de string con las rutas de las img) }
-router.post('/products', async (req, res) => {
+router.post('/api/products', async (req, res) => {
 
     const objectParam = req.body || {};
 
@@ -37,7 +37,7 @@ router.post('/products', async (req, res) => {
 });
 
 // ? Actualizar el producto
-router.put('/products/:pid', async (req, res) => {
+router.put('/api/products/:pid', async (req, res) => {
     const pid = parseInt(req.params.pid);
     if (isNaN(pid)) {
         return res.status(400).send({ message: "El parámetro no es numérico." });
@@ -73,7 +73,7 @@ router.put('/products/:pid', async (req, res) => {
 });
 
 // ? Eliminar el producto
-router.delete('/products/:pid', async (req, res) => {
+router.delete('/api/products/:pid', async (req, res) => {
     const pid = parseInt(req.params.pid);
     if (isNaN(pid)) {
         return res.status(400).send({ message: "El parámetro no es numérico." });
@@ -97,7 +97,7 @@ router.delete('/products/:pid', async (req, res) => {
 });
 
 // ? Listar todos los productos (con LIMIT)
-router.get('/products', async (req, res) => {
+router.get('/api/products', async (req, res) => {
     const arrData = await ProdManager.getProducts() || [];
 
     if (arrData.length <= 0) {
@@ -112,7 +112,7 @@ router.get('/products', async (req, res) => {
 });
 
 // ? Traer sólo el producto seleccionado
-router.get('/products/:pid', async (req, res) => {
+router.get('/api/products/:pid', async (req, res) => {
     const pid = parseInt(req.params.pid);
     if (isNaN(pid)) {
         return res.status(400).send({ message: "El parámetro no es numérico." });
