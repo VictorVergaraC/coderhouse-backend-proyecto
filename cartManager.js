@@ -16,10 +16,10 @@ export class CartManager {
         const arrData = await this._getCarts();
         const cartIndex = arrData.findIndex(cart => cart.id === idCart);
 
-        if (indexProduct) {
-            arrData[cartIndex].product = [ ...arrData[cartIndex].product, objProduct ];
-        } else {
+        if (indexProduct !== null) {
             arrData[cartIndex].products[indexProduct].quantity = objProduct.quantity;
+        } else {
+            arrData[cartIndex].products.push(objProduct);
         }
 
         try {
@@ -34,10 +34,8 @@ export class CartManager {
 
     async productInCart(idCart, idProduct) {
         const cart = await this.getCartById(idCart);
-
-        const product = cart.products.find(obj => obj.id === idProduct);
-
-        return index !== -1 ? { index, product: cart[index] } : false;
+        const productIndex = cart.products.findIndex(obj => obj && obj.id === idProduct);
+        return productIndex !== -1 ? { index: productIndex, product: cart.products[productIndex] } : false;
     }
 
     async createCart(objCart) {

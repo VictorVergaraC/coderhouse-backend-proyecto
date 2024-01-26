@@ -39,7 +39,7 @@ router.post('/cart', async (req, res) => {
     console.log('notExist:', notExist);
 
     if (notExist.length > 0) {
-        return res.status(400).send({ message: 'Productos no existen', missingProducts: notExist });
+        return res.status(400).send({ message: 'Productos no existen', notFoundProducts: notExist });
     }
 
     const productsWithQuantity = cartProducts.map(prod => ({
@@ -96,7 +96,7 @@ router.post('/cart/:cid/product/:pid', async (req, res) => {
     if (pid < 0) {
         return res.status(400).send({ message: "El id del producto no puede ser un número negativo." });
     }
-    if (!isValidObject(paramProduct), ['quantity']) {
+    if (!isValidObject(paramProduct, ['quantity'])) {
         return res.status(400).send({ message: "Faltan atributos al objeto.", missingAttrs: ['quantity'] });
     }
     if (paramProduct?.quantity <= 0) {
@@ -115,12 +115,17 @@ router.post('/cart/:cid/product/:pid', async (req, res) => {
     const productInCart = await shoppingCart.productInCart(cid, pid);
 
     if (productInCart) {
+
         // * Producto actual del carrito
         const { index, product: currentProduct } = productInCart;
+        console.log('Producto actual:', currentProduct);
+
         const { quantity: currentQuantity } = currentProduct;
 
         const newQuantity = currentQuantity + parseInt(paramProduct.quantity);
         const updatedProduct = { ...currentProduct, quantity: newQuantity };
+
+        console.log('Producto actualizado:', updatedProduct);
 
         const updated = await shoppingCart.updateCart(cid, index, updatedProduct);
 
@@ -130,7 +135,7 @@ router.post('/cart/:cid/product/:pid', async (req, res) => {
         return res.status(500).send({ message: "Ha ocurrido un error." });
     }
 
-    const inserted = shoppingCart.updateCart(cid, null, paramProduct);
+    const inserted = await shoppingCart.updateCart(cid, null, { id: pid, quantity: paramProduct.quantity });
     if (inserted) {
         return res.status(200).send({ message: "Carrito actualizado correctamente." });
     }
