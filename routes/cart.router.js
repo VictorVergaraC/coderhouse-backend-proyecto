@@ -21,31 +21,33 @@ const ProdManager = new ProductManager();
 router.post('/cart', async (req, res) => {
 
     const objectParam = req.body;
-    if (!isValidObject(objectParam, ['products'])) {
-        return res.status(400).send({ message: 'Faltan atributos al objeto 1.', missingAttrs: findMissingAttributes(objectParam, arrAttrRequired) });
-    }
 
     const { products: cartProducts } = objectParam;
     if (cartProducts.length <= 0) {
         return res.status(400).send({ message: 'El carrito no puede estar vacío.' });
     }
 
-    let productsWithErrors = [];
-
-    cartProducts.forEach((product, index) => {
-        if (!isValidObject(product, arrAttrRequired)) {
-            productsWithErrors = [
-                ...productsWithErrors,
-                { index, missingAttrs: findMissingAttributes(product, arrAttrRequired) }
-            ]
+    const promises = cartProducts.map(async prod => {
+        const exist = await ProdManager.getProductById(parseInt(prod.id));
+        if (!exist) {
+            return prod;
         }
-    });
+        return undefined;
+    })
 
-    if (productsWithErrors.length > 0) {
-        return res.status(400).send({ message: 'Faltan atributos a los objetos 2.', productsWithErrors });
+    const notExist = (await Promise.all(promises)).filter(prod => prod !== undefined);
+    console.log('notExist:', notExist);
+
+    if (notExist.length > 0) {
+        return res.status(400).send({ message: 'Productos no existen', missingProducts: notExist });
     }
 
-    const newCart = await shoppingCart.createCart({ products: cartProducts });
+    const productsWithQuantity = cartProducts.map(prod => ({
+        ...prod,
+        quantity: prod.quantity >= 1 ? prod.quantity : 1
+    }));
+
+    const newCart = await shoppingCart.createCart({ products: productsWithQuantity });
 
     if (newCart) {
         return res.status(200).send({ message: "Carrito creado correctamente." });

@@ -30,7 +30,7 @@ export class ProductManager {
     async getProducts() {
         try {
 
-            const fileExist = await this.fileExist(this.path);
+            const fileExist = await this._fileExist(this.path);
 
             if (!fileExist) {
                 const created = await this.createFile(this.path, "[]");
