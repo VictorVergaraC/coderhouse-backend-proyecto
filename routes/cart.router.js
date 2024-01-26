@@ -69,7 +69,7 @@ router.get('/cart/:cid', async (req, res) => {
     const objectCart = await shoppingCart.getCartById(cid);
 
     if (objectCart) {
-        const { carrito } = objectCart;
+        const { products: carrito } = objectCart;
         return res.status(200).json(carrito);
     }
 
@@ -99,7 +99,7 @@ router.post('/cart/:cid/product/:pid', async (req, res) => {
     if (!isValidObject(paramProduct, ['quantity'])) {
         return res.status(400).send({ message: "Faltan atributos al objeto.", missingAttrs: ['quantity'] });
     }
-    if (paramProduct?.quantity <= 0) {
+    if (paramProduct.quantity <= 0) {
         return res.status(400).send({ message: "La cantidad no puede ser en negativo." });
     }
 

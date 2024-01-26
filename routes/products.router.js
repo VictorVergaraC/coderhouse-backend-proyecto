@@ -10,7 +10,7 @@ const ProdManager = new ProductManager();
 const arrAttrRequired = ['title', 'description', 'code', 'price', 'stock', 'category'];
 
 // ? Este objeto lo usaremos para copiar sus atributos por si thumbnail o status vienen sin algún valor previo.
-const defaultProduct = { title: '', description: '', code: '', price: '', status: true, stock: 0, category: '', thumbnail: [] }
+const defaultProduct = { title: '', description: '', code: '', price: 0, status: true, stock: 0, category: '', thumbnail: [] }
 
 // ? Agregar nuevo producto
 // * { id (automático: number/string), title, description, code, price, status (true por defecto), stock, category, thumbnail (No es obligatorio, Array de string con las rutas de las img) }
@@ -47,10 +47,6 @@ router.put('/products/:pid', async (req, res) => {
     }
     const paramsProduct = req.body;
 
-    if (!isValidObject(paramsProduct, arrAttrRequired)) {
-        return res.status(400).send({ message: 'Faltan atributos al objeto.', missingAttrs: findMissingAttributes(paramsProduct, arrAttrRequired) });
-    }
-
     const currentProduct = await ProdManager.getProductById(pid);
     if (!currentProduct) {
         return res.status(404).send({ message: 'El producto no existe en nuestros registros.' });
@@ -62,6 +58,10 @@ router.put('/products/:pid', async (req, res) => {
         ...currentProduct,
         ...paramsProduct,
         id: currentId
+    }
+
+    if (!isValidObject(updatedProduct, arrAttrRequired)) {
+        return res.status(400).send({ message: 'Faltan atributos al objeto.', missingAttrs: findMissingAttributes(updatedProduct, arrAttrRequired) });
     }
 
     const updated = await ProdManager.updateProduct(pid, updatedProduct);

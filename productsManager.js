@@ -33,7 +33,7 @@ export class ProductManager {
             const fileExist = await this._fileExist(this.path);
 
             if (!fileExist) {
-                const created = await this.createFile(this.path, "[]");
+                const created = await this._createFile(this.path, "[]");
                 if (!created) {
                     throw error;
                     return;
@@ -87,8 +87,8 @@ export class ProductManager {
             }
 
             console.log("Producto actualizado!", arrData[index]);
-            
-            return await this.createFile(this.path, JSON.stringify(arrData));
+
+            return await this._createFile(this.path, JSON.stringify(arrData));
         }
 
         console.log("No se encontraron productos!")
@@ -110,7 +110,7 @@ export class ProductManager {
 
         try {
 
-            const deleted = await this.createFile(this.path, JSON.stringify(newArr));
+            const deleted = await this._createFile(this.path, JSON.stringify(newArr));
             if (deleted) {
                 console.log("Producto eliminado!")
                 return true;
@@ -127,7 +127,12 @@ export class ProductManager {
 
     async getLastId() {
         const arrData = await this.getProducts() || []
-        return arrData.length + 1
+        if (arrData.length > 0) {
+            const lastId = arrData[arrData.length - 1].id;
+            return lastId + 1
+        }
+        return 1;
+
     }
 
     async _fileExist(strFile) {
