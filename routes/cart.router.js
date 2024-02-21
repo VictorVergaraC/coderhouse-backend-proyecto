@@ -1,7 +1,7 @@
 import express from 'express';
 import { CartManager } from '../cartManager.js';
-import { findMissingAttributes, isValidObject } from '../helpers.js';
 import { ProductManager } from '../productsManager.js';
+import { findMissingAttributes, isValidObject } from '../helpers.js';
 
 const router = express.Router();
 
